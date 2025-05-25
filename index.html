@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cricket Game</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", sans-serif;
+      }
+      body {
+        background: linear-gradient(to bottom right, #1e293b, #0f172a);
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 30px 20px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 36px;
+        color: #60a5fa;
+        text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+      }
+
+      .container {
+        display: flex;
+        width: 100%;
+        max-width: 1100px;
+        gap: 30px;
+      }
+
+      .left-panel,
+      .right-panel {
+        width: 50%;
+        backdrop-filter: blur(12px);
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+      }
+
+      .left-panel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      button {
+        width: 200px;
+        font-size: 18px;
+        padding: 12px 24px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 10px;
+        background-color: #2563eb;
+        color: white;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      button:hover {
+        background-color: #1d4ed8;
+      }
+
+      .reset-btn {
+        background-color: #dc2626;
+      }
+
+      .reset-btn:hover {
+        background-color: #991b1b;
+      }
+
+      .output,
+      .scorecard {
+        background-color: rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 20px;
+        text-align: center;
+        width: 100%;
+        color: white;
+        font-size: 18px;
+      }
+
+      .scorecard {
+        margin-top: 10px;
+      }
+
+      .right-panel h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #93c5fd;
+      }
+
+      .right-panel ul {
+        list-style: none;
+        font-size: 18px;
+        line-height: 1.8;
+      }
+
+      .right-panel li {
+        margin-bottom: 10px;
+        color: #f8fafc;
+      }
+
+      .reset-text {
+        color: lightgreen;
+        font-size: 22px;
+        margin-top: 15px;
+      }
+
+      span {
+        color: #22c55e;
+        font-size: 26px;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+        }
+        .left-panel,
+        .right-panel {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🏏 Cricket Game: Bat, Ball, Stumps</h1>
+
+    <div class="container">
+      <!-- Left side: Game -->
+      <div class="left-panel">
+        <button onclick="playGame('Bat')">🏏 Bat</button>
+        <button onclick="playGame('Ball')">⚾ Ball</button>
+        <button onclick="playGame('Stumps')">🪵 Stumps</button>
+        <button class="reset-btn" onclick="reset()">🔁 Reset</button>
+
+        <div class="output"></div>
+        <div class="scorecard"></div>
+      </div>
+
+      <!-- Right side: Game Rules -->
+      <div class="right-panel">
+        <h2>📜 Game Rules</h2>
+        <ul>
+          <li>🏏 Bat beats ⚾ Ball</li>
+          <li>⚾ Ball beats 🪵 Stumps</li>
+          <li>🪵 Stumps beat 🏏 Bat</li>
+          <li>🤝 Same choice = Tie</li>
+          <li>🔁 Click Reset to start over</li>
+          <li>💾 Scores are saved in your browser using Local Storage</li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      let userWins = parseInt(localStorage.getItem("userWins")) || 0;
+      let computerWins = parseInt(localStorage.getItem("computerWins")) || 0;
+      let ties = parseInt(localStorage.getItem("ties")) || 0;
+
+      function playGame(userChoice) {
+        const options = ["Bat", "Ball", "Stumps"];
+        const computerChoice = options[Math.floor(Math.random() * 3)];
+        let result = "";
+
+        if (userChoice === computerChoice) {
+          result = "It's a Tie 🤝";
+          ties++;
+        } else if (
+          (userChoice === "Bat" && computerChoice === "Ball") ||
+          (userChoice === "Ball" && computerChoice === "Stumps") ||
+          (userChoice === "Stumps" && computerChoice === "Bat")
+        ) {
+          result = "You Win! 🎉";
+          userWins++;
+        } else {
+          result = "Computer Wins 😢";
+          computerWins++;
+        }
+
+        localStorage.setItem("userWins", userWins);
+        localStorage.setItem("computerWins", computerWins);
+        localStorage.setItem("ties", ties);
+
+        document.querySelector(".output").innerHTML = `
+        You: <b>${userChoice}</b><br>
+        Computer: <b>${computerChoice}</b><br>
+        <span><b>${result}</b></span>
+      `;
+        updateScoreboard();
+      }
+
+      function updateScoreboard() {
+        document.querySelector(".scorecard").innerHTML = `
+        <b>📊 Scorecard:</b><br>
+        🙋‍♂️ Your Wins: ${userWins}<br>
+        💻 Computer Wins: ${computerWins}<br>
+        🤝 Ties: ${ties}
+      `;
+      }
+
+      function reset() {
+        userWins = 0;
+        computerWins = 0;
+        ties = 0;
+        localStorage.clear();
+        updateScoreboard();
+        document.querySelector(
+          ".output"
+        ).innerHTML = `<div class="reset-text">🔄 Score has been reset!</div>`;
+      }
+
+      updateScoreboard();
+    </script>
+  </body>
+</html>
